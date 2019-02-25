@@ -5,7 +5,7 @@ db.query = function (sql,queryArray, callback) {
         host:'localhost',
         user: 'root',
         password: 'abc123456',
-        database:'test_first',
+        database:'graduateproject',
         port: 3306,
         multipleStatements: true //可以插入多条sql语句
     });
