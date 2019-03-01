@@ -13,18 +13,5 @@ router.get('/getData', function(req, res, next) {
   })
 });
 
-router.get('/sendDetail',function(req,res) {
-  console.log("参数",req)
-  console.log("query",req.query)
-  if(req.query.id) {
-    db.query('select * from content where id=?',[req.query.id],function(result){
-      res.send({
-        resultCode: 0,
-        resultMsg: "success",
-        data: result
-      })
-    })
-  }
-})
 
 module.exports = router;
