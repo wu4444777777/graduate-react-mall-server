@@ -33,5 +33,35 @@ router.post('/saveRecord', function(req, res, next) {
   }
 })
 
+router.get("/getSaveList",function(req,res){
+  db.query('select * from saverecord',[],function(saveList){
+    if(saveList && saveList.length>0){
+      res.send({
+        data: saveList,
+        resultCode: 0,
+        resultMsg: "success"
+      })
+    }else{
+      res.send({
+        data: [],
+        resultCode: 1,
+        resultMsg: "您还未收藏任何东西"
+      })
+    }
+  })
+})
 
+router.get("/deleteSaveOne",function(req,res) {
+  if(req.query){
+    db.query('delete from saverecord where id=?;select * from saverecord',[req.query.id],function(results){
+      if(results[0].affectedRows == 1){
+        res.send({
+          data: results[1],
+          resultCode: 0,
+          resultMsg: "success"
+        })
+      }
+    })
+  }
+})
 module.exports = router;

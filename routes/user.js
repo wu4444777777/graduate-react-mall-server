@@ -6,18 +6,14 @@ router.post('/login',function(req,res) {
   if(req.body && req.body != null && req.body != undefined) {
     let userInfo = req.body
     user.query('select * from user where phone=?',[userInfo.phone],function(loginInfo){
-      console.log("登录信息",userInfo)
-      console.log("浏览器信息",loginInfo)
       if(loginInfo != false) {
         if(userInfo.password == loginInfo[0].password) {
-          console.log("1")
           res.send({
             data: loginInfo[0],
             resultCode: 0,
             resultMsg: "登录成功"
           })
         }else{
-          console.log("2")
           res.send({
             data: {},
             resultCode: 1,
@@ -25,7 +21,6 @@ router.post('/login',function(req,res) {
           })
         }
       }else{
-        console.log("3")
         res.send({
           data: {},
           resultCode: 1,
@@ -39,7 +34,6 @@ router.post('/login',function(req,res) {
 router.get('/getUserInfo',function(req,res) {
   if(req.query != false) {
     user.query('select * from user where phone=?',[req.query.phone],function(user) {
-      console.log("user",user)
       res.send({
         data: user[0],
         resultCode: 0,
@@ -50,10 +44,10 @@ router.get('/getUserInfo',function(req,res) {
 })
 
 router.post('/register',function(req,res) {
-  if(req.body != null && req.body != undefined){
-    let user = req.body
+  if(req.body){
+    let userInfo = req.body
     user.query('select * from user where phone=?',
-      [user.phone],
+      [userInfo.phone],
       function(isUser){
         if(isUser && isUser.length == 1) {
           res.send({
@@ -62,8 +56,8 @@ router.post('/register',function(req,res) {
             resultMsg: "您已注册"
           })
         }else{
-          user.query('insert into user(username,password,phone,email,qq) values(?,?,?,?,?)',
-          [user.username,user.password,user.phone,user.email,user.qq],function(insertInfo) {
+          user.query('insert into user(username,password,phone,email,qq,registerDate,userToken) values(?,?,?,?,?,?,?)',
+          [userInfo.username,userInfo.password,userInfo.phone,userInfo.email,userInfo.qq,userInfo.registerDate,userInfo.userToken],function(insertInfo) {
             if(insertInfo) {
               res.send({
                 data: {},
@@ -75,6 +69,27 @@ router.post('/register',function(req,res) {
         }
       }
     )
+  }
+})
+
+router.post('/updateUserInfo',function(req,res){
+  if(req.body){
+    user.query(`update user set ${req.body.editName}=? where userToken=?;select * from user where userToken=?`,[req.body.editValue,req.body.userToken,req.body.userToken],function(updateResult){
+      console.log("更新结果",updateResult)
+      if(updateResult[0].affectedRows == 1){
+        res.send({  
+          data: updateResult[1][0],
+          resultCode: 0,
+          resultMsg: "success"
+        })
+      }else{
+        res.send({  
+          data: updateResult[1][0],
+          resultCode: 1,
+          resultMsg: "修改失败"
+        })
+      }
+    })
   }
 })
 

@@ -12,6 +12,9 @@ var saveRouter =  require('./routes/save');
 var cartRouter = require('./routes/shoppingcart')
 var orderRouter = require('./routes/order')
 var detailRouter = require('./routes/detail')
+var classifyRouter = require('./routes/classify')
+var searchRouter = require('./routes/search')
+var addressRouter = require('./routes/address')
 
 var app = express();
 
@@ -31,7 +34,7 @@ app.all('*',function (req, res, next) {
   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
 
   if (req.method == 'OPTIONS') {
-      res.send(200); /让options请求快速返回/
+      res.sendStatus(200); /让options请求快速返回/
   }
   else {
       next();
@@ -46,6 +49,9 @@ app.use('/save',saveRouter)
 app.use('/shoppingcart',cartRouter)
 app.use('/order',orderRouter)
 app.use('/detail',detailRouter)
+app.use('/classify',classifyRouter)
+app.use('/search',searchRouter)
+app.use('/address',addressRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

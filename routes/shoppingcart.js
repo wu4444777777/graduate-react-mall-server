@@ -34,37 +34,65 @@ router.get('/deleteOne',function(req,res,next) {
   }
 })
 
-router.post('/addIntoCart',function(req,res,next) {
-  if(req.body) {
-    db.query('insert IGNORE into cartrecord(id,name,price,imageUrl,num) values(?,?,?,?,?);select * from cartrecord',[
-      req.body.id,req.body.name,req.body.price,req.body.image,req.body.proNum
-    ],
-    function(insertCartInfo) {
-      if(insertCartInfo[0] != false) {
-        if(insertCartInfo[0].warningCount == 0) {
+router.get('/deleteLots',function(req,res){
+  console.log(req.query)
+  if(req.query) {
+    db.query('delete from cartrecord where cartId in (?)',[req.query.deleteArr],function(deleteResult){
+      console.log(deleteResult)
+      if(deleteResult.affectedRows != 0) {
+        db.query('select * from cartrecord',[],function(cartList){
           res.send({
-            data: {
-              cartNum: insertCartInfo[1].length
-            },
+            data: cartList,
             resultCode: 0,
             resultMsg: "success"
           })
-        }else{
-          res.send({
-            data: {
-              cartNum: insertCartInfo[1].length
-            },
-            resultCode: 1,
-            resultMsg: "该商品已在购物车中"
-          })
-        }
+        })
       }else{
         res.send({
+          data: {},
+          resultCode: 1,
+          resultMsg: "删除失败，请重试！"
+        })
+      }
+    })
+  }
+})
+
+router.post('/addIntoCart',function(req,res,next) {
+  if(req.body) {
+    db.query('select * from cartrecord where id=?;select * from cartrecord',[req.body.id],function(selectResult){
+      console.log("selectResult",selectResult)
+      if(selectResult[0].length >0) {
+        res.send({
           data: {
-            cartNum: insertCartInfo[1].length
+            cartNum: selectResult[1].length
           },
           resultCode: 1,
-          resultMsg: "加入购物车失败"
+          resultMsg: "该商品已在购物车中"
+        })
+      }else{
+        db.query('insert into cartrecord(id,name,price,imageUrl,num) values(?,?,?,?,?);select * from cartrecord',[
+          req.body.id,req.body.name,req.body.price,req.body.imageUrl,req.body.proNum
+        ],
+        function(insertCartInfo) {
+          console.log("插入数据",insertCartInfo)
+          if(insertCartInfo[0]){
+            res.send({
+              data: {
+                cartNum: insertCartInfo[1].length
+              },
+              resultCode: 0,
+              resultMsg: "success"
+            })
+          }else{
+            res.send({
+              data: {
+                cartNum: insertCartInfo[1].length
+              },
+              resultCode: 1,
+              resultMsg: "加入购物车失败"
+            })
+          }
         })
       }
     })

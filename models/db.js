@@ -12,7 +12,7 @@ db.query = function (sql,queryArray, callback) {
     connect.connect();
     connect.query(sql,queryArray, function (err,rows) {
       console.log(sql)
-        if(err)console.log(err);
+        if(err) console.log(err);
         callback(rows);
     });
     connect.end();
