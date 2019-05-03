@@ -5,14 +5,14 @@ var db = require('../models/db')
 router.post("/addORupdateAddress",function(req,res){
   if(req.body){
     if(req.body.prior == 1){
-      db.query('update address set prior=0 where prior=1',[],function(updataPriorResult){
+      db.query('update address set prior=0 where userToken=?',[req.body.userToken],function(updataPriorResult){
         console.log("修改",updataPriorResult)
       })
     }
     if(req.body.id != 0){
       console.log("prior====>",req.body.prior)
-      db.query('update address set username=?,userphone=?,province=?,city=?,district=?,detailAddress=?,prior=? where id=?',[
-        req.body.username,req.body.userphone,req.body.province,req.body.city,req.body.district,req.body.address,req.body.prior,req.body.id
+      db.query('update address set username=?,userphone=?,province=?,city=?,district=?,detailAddress=?,prior=? where id=? and userToken=?',[
+        req.body.username,req.body.userphone,req.body.province,req.body.city,req.body.district,req.body.address,req.body.prior,req.body.id,req.body.userToken
       ],function(result){
         res.send({
           data: {},
@@ -69,9 +69,8 @@ router.get("/getAddressList",function(req,res){
 router.get("/deleteAddress",function(req,res){
   if(req.query){
     db.query('delete from address where id=?',[req.query.id],function(deleteAddressResult){
-      console.log(deleteAddressResult)
       if(deleteAddressResult.affectedRows == 1){
-        db.query('select * from address',[],function(selectAddressResult){
+        db.query('select * from address where userToken=?',[req.query.userToken],function(selectAddressResult){
           res.send({
             data: selectAddressResult,
             resultCode: 0,
@@ -85,15 +84,23 @@ router.get("/deleteAddress",function(req,res){
 
 // 获取默认地址，prior=1的情况下
 router.get("/getPriorAddress",function(req,res){
-  db.query('select * from address where prior=1',[],function(priorResult){
-    if(priorResult){
-      res.send({
-        data: priorResult[0],
-        resultCode: 0,
-        resultMsg: "success"
-      })
-    }
-  })
+  if(req.query){
+    db.query('select * from address where prior=1 and userToken=?',[req.query.userToken],function(priorResult){
+      if(priorResult && priorResult.length>0){
+        res.send({
+          data: priorResult[0],
+          resultCode: 0,
+          resultMsg: "success"
+        })
+      }else{
+        res.send({
+          data: {},
+          resultCode: 1,
+          resultMsg: "您还未添加新地址"
+        })
+      }
+    })
+  }
 })
 
 // 获取用户订单页地址

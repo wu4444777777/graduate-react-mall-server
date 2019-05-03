@@ -4,7 +4,7 @@ var db = require('../models/db');
 
 router.get('/getDetail',function(req,res) {
   console.log("query",req.query)
-  db.query('select * from cartrecord',[],function(cartNum) {
+  db.query('select * from cartrecord where userToken=?',[req.query.userToken],function(cartNum) {
     if(req.query.id) {
       db.query('select * from content where id=?',[req.query.id],function(result){
         res.send({
@@ -20,4 +20,4 @@ router.get('/getDetail',function(req,res) {
   })
 })
 
-module.exports = router;
+module.exports = router;  

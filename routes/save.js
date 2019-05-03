@@ -5,8 +5,8 @@ var db = require('../models/db')
 /* GET home page. */
 router.post('/saveRecord', function(req, res, next) {
   if(req.body != false) {
-    db.query('insert IGNORE into saverecord(id,name,price,imageUrl,type) values(?,?,?,?,?)',[
-      req.body.id,req.body.name,req.body.price,req.body.image,req.body.type
+    db.query('insert IGNORE into saverecord(id,name,price,imageUrl,type,userToken) values(?,?,?,?,?,?)',[
+      req.body.id,req.body.name,req.body.price,req.body.imageUrl,req.body.type,req.body.userToken
     ],function(record){
       if(record) {
         if(record.warningCount == 0) {

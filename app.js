@@ -15,6 +15,7 @@ var detailRouter = require('./routes/detail')
 var classifyRouter = require('./routes/classify')
 var searchRouter = require('./routes/search')
 var addressRouter = require('./routes/address')
+var activityRouter = require('./routes/activity')
 
 var app = express();
 
@@ -52,6 +53,7 @@ app.use('/detail',detailRouter)
 app.use('/classify',classifyRouter)
 app.use('/search',searchRouter)
 app.use('/address',addressRouter)
+app.use('/activity',activityRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

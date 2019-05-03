@@ -24,4 +24,24 @@ router.get("/searchProduct",function(req,res){
   }
 })
 
+router.get("/adminSearchProduct",function(req,res){
+  if(req.query){
+    db.query(`select * from content where name like ?`,["%"+ req.query.productname + "%"],function(searchResult){
+      if(searchResult && searchResult.length >0){
+        res.send({
+          data: searchResult,
+          resultCode: 0,
+          resultMsg: "success"
+        })
+      }else{
+        res.send({
+          data: {},
+          resultCode: 1,
+          resultMsg: "未查询到该商品，请重输"
+        })
+      }
+    })
+  }
+})
+
 module.exports = router;
